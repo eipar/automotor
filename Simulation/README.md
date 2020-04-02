@@ -1,0 +1,1 @@
+This simulations were tested with LTSpice IV from Linear Technologies
