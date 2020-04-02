@@ -1,3 +1,4 @@
 #All temporal files from LTSpice
 *.raw
 sensadocorriente.txt
+*.log
