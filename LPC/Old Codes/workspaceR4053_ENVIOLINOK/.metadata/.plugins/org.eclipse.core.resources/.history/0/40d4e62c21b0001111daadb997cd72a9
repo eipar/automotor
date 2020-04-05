@@ -1,0 +1,62 @@
+/*
+===============================================================================
+ PROBLEMA 2.1
+ Hacer parpadear un LED en P0.22, con demora por SysTick, utilizando CMSIS.
+ Versión: 0.0
+ Curso: R4054
+ Fecha: 06/06/12
+ Ing. Ruben M. Lozano
+ ===============================================================================
+*/
+
+//#include <lpc17xx_gpio.h>
+#include "LPC17xx.h"
+
+#include <cr_section_macros.h>
+#include <NXP/crp.h>
+
+
+/************************** PRIVATE VARIABLES *************************/
+/* SysTick Counter */
+volatile uint32_t SysTickCnt;
+
+/************************** PRIVATE FUNCTIONS *************************/
+void SysTick_Handler (void);
+
+void Delay (uint32_t tick);
+
+/*----------------- INTERRUPT SERVICE ROUTINES --------------------------*/
+/*********************************************************************/
+void SysTick_Handler (void) {
+   SysTickCnt++;
+ }
+
+/*-------------------------PRIVATE FUNCTIONS------------------------------*/
+/*********************************************************************/
+void Delay (unsigned long tick) {
+   unsigned long systickcnt;
+
+   systickcnt = SysTickCnt;
+   while ((SysTickCnt - systickcnt) < tick);
+ }
+
+
+
+int main(void)
+{
+
+	GPIO_SetDir(0, 22 , 1);	//Configuro el pin como salida
+    SysTick_Config(SystemCoreClock/1000); /* Generate interrupt each 10 ms   */
+
+	while(1)
+		{
+		GPIO_SetValue(0, 22);        //coloco un "1" en P0.22
+		Delay(2000);                  //demora 500 mS
+
+		GPIO_ClearValue(0, 22);        //coloco un "0" en P0.22
+		Delay(2000);                   //demora 500 mS
+		}
+
+	return 0 ;
+}
+

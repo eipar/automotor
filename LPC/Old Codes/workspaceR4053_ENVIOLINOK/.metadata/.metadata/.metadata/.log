@@ -1,0 +1,9 @@
+!SESSION 2013-05-23 14:53:46.734 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=1.6.0_20
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=es_ES
+Command-line arguments:  -os win32 -ws win32 -arch x86
+
+!ENTRY org.eclipse.ui 4 4 2013-05-23 14:54:04.218
+!MESSAGE Unable to find view with id: com.crt.swv.views.SwvViews, when creating perspective com.crt.lite.perspective.CRTPerspective

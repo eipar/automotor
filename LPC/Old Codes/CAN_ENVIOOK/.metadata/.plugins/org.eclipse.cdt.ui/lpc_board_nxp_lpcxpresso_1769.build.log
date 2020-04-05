@@ -1,0 +1,6 @@
+12:55:32 **** Build of configuration Debug for project lpc_board_nxp_lpcxpresso_1769 ****
+make -r all 
+make: Nothing to be done for `all'.
+
+12:55:33 Build Finished (took 484ms)
+

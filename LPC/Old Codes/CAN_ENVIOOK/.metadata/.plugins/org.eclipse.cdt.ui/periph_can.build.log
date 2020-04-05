@@ -1,0 +1,25 @@
+12:55:35 **** Build of configuration Debug for project periph_can ****
+make -r all 
+Building file: ../example/src/can.c
+Invoking: MCU C Compiler
+arm-none-eabi-gcc -D__REDLIB__ -DDEBUG -D__CODE_RED -D__USE_LPCOPEN -DCORE_M3 -I"C:\Users\Eugenia\Desktop\CAN\lpc_chip_175x_6x\inc" -I"C:\Users\Eugenia\Desktop\CAN\lpc_board_nxp_lpcxpresso_1769\inc" -O0 -g3 -Wall -c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -mcpu=cortex-m3 -mthumb -specs=redlib.specs -MMD -MP -MF"example/src/can.d" -MT"example/src/can.o" -MT"example/src/can.d" -o "example/src/can.o" "../example/src/can.c"
+../example/src/can.c: In function 'main':
+../example/src/can.c:167:9: warning: variable 'aux' set but not used [-Wunused-but-set-variable]
+  Status aux;
+         ^
+Finished building: ../example/src/can.c
+ 
+Building target: periph_can.axf
+Invoking: MCU Linker
+arm-none-eabi-gcc -nostdlib -L"C:\Users\Eugenia\Desktop\CAN\lpc_chip_175x_6x\Debug" -L"C:\Users\Eugenia\Desktop\CAN\lpc_board_nxp_lpcxpresso_1769\Debug" -Xlinker -Map="periph_can.map" -Xlinker --gc-sections -mcpu=cortex-m3 -mthumb -T "periph_can_Debug.ld" -o "periph_can.axf"  ./example/src/can.o ./example/src/cr_startup_lpc175x_6x.o ./example/src/sysinit.o   -llpc_board_nxp_lpcxpresso_1769 -llpc_chip_175x_6x
+Finished building target: periph_can.axf
+ 
+make --no-print-directory post-build
+Performing post-build steps
+arm-none-eabi-size "periph_can.axf"; # arm-none-eabi-objcopy -v -O binary "periph_can.axf" "periph_can.bin" ; # checksum -p LPC1769 -d "periph_can.bin";
+   text	   data	    bss	    dec	    hex	filename
+  18224	    184	    344	  18752	   4940	periph_can.axf
+ 
+
+12:55:36 Build Finished (took 609ms)
+

@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;periph_can/example/src/fcan.h&apos;" deleteContents="false" description="Delete resource &apos;periph_can/example/src/fcan.h&apos;" element1="/periph_can/example/src/fcan.h" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1465841439067"/>&#x0A;<refactoring comment="Delete resource &apos;periph_can/example/readme.txt&apos;" deleteContents="false" description="Delete resource &apos;periph_can/example/readme.txt&apos;" element1="/periph_can/example/readme.txt" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1465842329513"/>
+</session>
