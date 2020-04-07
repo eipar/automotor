@@ -2,17 +2,24 @@
 #include	<controlador.h>
 
 volatile bit check_temp;
+volatile bit check_fuzzy;
+
+//extern unsigned char input;
+//extern unsigned char fuzzy_out;
 
 void main ( void )
 {
 	float temp_med;
+	char  temp_fuzzy_in, aux;
 
 	PLACA_Init( );
-//	EA = 1;	 // activo las interrupciones
 
 	freno_OFF;
 	
 	EA = 1;	 // activo las interrupciones
+
+	input[0] =0x00; input[1] = 0x08;
+
 	
 	while( 1 )
 	{
@@ -24,6 +31,17 @@ void main ( void )
 			check_temp = 0;
 			temp_med = LeerTemp( );
 			check_status_sensor( temp_med );
+
+			temp_fuzzy_in = (char) temp_med;
+			input[0] = temp_fuzzy_in;
+		}
+
+		if(check_fuzzy)
+		{
+		 	check_fuzzy = 0;
+			fuzzy_engine();
+
+			aux = fuzzy_out[0];
 		}
 
 	}
@@ -60,6 +78,7 @@ void timertick ( void ) interrupt 1
 	//El Duty del PWM varia con los botoncitos del kit
 	if( !ticks_pwm ){
 		ticks_pwm = 100;
+		check_fuzzy = 1;
 		if(PWM_MAX_STATUS){
 			PWM_VAL_INI;
 		}else{
@@ -74,4 +93,8 @@ void timertick ( void ) interrupt 1
 		}
 	}
 
+//	if( !ticks_pwm ){
+//		ticks_pwm = 100;
+//		check_fuzzy = 1;
+//	}
 }

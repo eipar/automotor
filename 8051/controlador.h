@@ -12,6 +12,7 @@
 #endif
 
 #include	<ntcm12.h>		    	// Sensor de temperatura
+#include	<fuzzy.h>
 
 #include	<stdio.h>
 #include	<stdlib.h>
@@ -89,6 +90,11 @@ void		PLACA_Init	    	( void );
 void 		reset_system_timer  ( void );
 void 		check_status_sensor ( float );
 void 		check_board_live 	( void );
+
+void 		fuzzy_engine(void);
+unsigned char compute_memval(unsigned char,unsigned char );
+void defuzzify(void);
+void normalize (void);
 //===============================================================================================
 //-----------------------------------------------------------------------------------------------
 // Globales

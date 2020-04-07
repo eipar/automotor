@@ -1,6 +1,79 @@
 #include	<controlador.h>
 #include 	<fuzzy.h>
 
+unsigned char code rules[RULE_TOT]={ // fuzzy system rules
+// if... and... then...
+	T_VLOW,		A_STEADY,	V_OFF,
+	T_VLOW,		A_LOW,		V_OFF,
+	T_VLOW,		A_MEDIUM,	V_LOW,
+	T_VLOW,		A_HIGH,		V_LOW,
+	T_VLOW,		A_VHIGH,	V_MEDIUM,
+	T_LOW,		A_STEADY,	V_OFF,
+	T_LOW,		A_LOW,		V_LOW,
+	T_LOW,		A_MEDIUM,	V_LOW,
+	T_LOW,		A_HIGH,		V_MEDIUM,
+	T_LOW,		A_VHIGH,	V_MEDIUM,
+	T_MEDIUM,	A_STEADY,	V_LOW,
+	T_MEDIUM,	A_LOW,		V_LOW,
+	T_MEDIUM,	A_MEDIUM,	V_MEDIUM,
+	T_MEDIUM,	A_HIGH,		V_MEDIUM,
+	T_MEDIUM,	A_VHIGH,	V_HIGH,
+	T_HIGH,		A_STEADY,	V_MEDIUM,
+	T_HIGH,		A_LOW,		V_MEDIUM,
+	T_HIGH,		A_MEDIUM,	V_HIGH,
+	T_HIGH,		A_HIGH,		V_HIGH,
+	T_HIGH,		A_VHIGH,	V_HIGH,
+	T_VHIGH,	A_STEADY,	V_MEDIUM,
+	T_VHIGH,	A_LOW,		V_HIGH,
+	T_VHIGH,	A_MEDIUM,	V_HIGH,
+	T_VHIGH,	A_HIGH,		V_VHIGH,
+	T_VHIGH,	A_VHIGH,	V_VHIGH,
+	T_CRITICAL,	A_STEADY,	V_HIGH,
+	T_CRITICAL,	A_LOW, 		V_VHIGH,
+	T_CRITICAL,	A_MEDIUM,	V_VHIGH,
+	T_CRITICAL,	A_HIGH,		V_MAX,
+	T_CRITICAL,	A_VHIGH,	V_MAX
+};
+
+unsigned char code input_memf[INPUT_TOT][MF_TOT][4]={
+		// input membership functions in point slope form. The first
+		// dimension is the input number, the second dimension is
+		// the label number and the third dimension refers to the
+		// point/slope data
+	// membership functions for temperature
+	{
+		{ 0x00, 0x00, 0x70, 0x11 }, // T_VLOW
+		{ 0x70, 0x11, 0x8E, 0x11 }, // T_LOW
+		{ 0x8E, 0x11, 0xAC, 0x11 }, // T_MEDIUM
+		{ 0xAC, 0x11, 0xBB, 0x11 }, // T_HIGH
+		{ 0xBB, 0x11, 0xCA, 0x11 }, // T_VHIGH
+		{ 0xCA, 0x11, 0xFF, 0x00 }	// T_CRITICAL
+	},
+	// membership functions for acceleration
+	{
+		{ 0x00, 0x00, 0x00, 0x0A }, // A_STEADY
+		{ 0x00, 0x15, 0x19, 0x14 }, // A_LOW
+		{ 0x19, 0x0A, 0x72, 0x0A }, // A_MEDIUM
+		{ 0x72, 0x0A, 0xBF, 0x0A }, // A_HIGH
+		{ 0xBF, 0x0A, 0xFF, 0x0 }  // A_VHIGH
+	}
+};
+
+unsigned char code output_memf[OUTPUT_TOT][MF_TOT]={
+		// output membership singletons
+		// The first dimension is the output number, the second is
+		// the label number
+{ M_OFF, M_LOW, M_MEDIUM, M_HIGH, M_VHIGH, M_MAX} 
+// motor speed singletons:
+// V_OFF, V_LOW, V_MEDIUM, V_HIGH, V_VHIGH,  V_MAX
+
+};
+
+unsigned char outputs[OUTPUT_TOT][MF_TOT], // fuzzy output mu values
+			  fuzzy_out[OUTPUT_TOT]; // fuzzy engine outputs
+unsigned char input[INPUT_TOT] ={ // fuzzified inputs
+				0, 0};
+
 /*****************************************************************
 Function: fuzzy_engine
 Description: Executes the rules in the fuzzy rule base.
@@ -8,35 +81,35 @@ Parameters: none.
 Returns: nothing.
 Side Effects: none.
 *****************************************************************/
-unsigned char bdata clause_val; // fast access storage for the current clause
-sbit operator = clause_val^3; // this bit indicates fuzzy operator to use
-sbit clause_type = clause_val^7; // this bit indicates if the clause is an antecedent or a consequence
+unsigned char bdata clause_val; 	// fast access storage for the current clause
+sbit operator 	 = clause_val^3; 	// this bit indicates fuzzy operator to use
+sbit clause_type = clause_val^7; 	// this bit indicates if the clause is an antecedent or a consequence
 
 void fuzzy_engine(void) {
 	bit then; // set true when consequences are being analyzed
-	unsigned char 	if_val, // holds the mu value for antecedents in the current rule
-					clause, // indicates the current clause in the rule base
-					mu, // holds the mu value of the current clause
+	unsigned char 	if_val,  // holds the mu value for antecedents in the current rule
+					clause,  // indicates the current clause in the rule base
+					mu, 	 // holds the mu value of the current clause
 					inp_num, // indicates the input used by the antecedent
-					label; // indicates the membership function used by the antecedent
+					label;   // indicates the membership function used by the antecedent
 
 	then=0; // assume that the first clause is an antecedent
 	if_val=MU_MAX; // max out mu for the first rule
 	for (clause=0; clause<RULE_TOT; clause++) { // loop through all the rules
 		clause_val=rules[clause]; // reads the current clause into bdata
-		if (!clause_type) { // if the current clause is an antecedent...
-			if (then) { // if a then part was being run...
-				then=0; // change back to if
-				if_val=MU_MAX; // and reset mu for the rule
+		if (!clause_type) { 	  // if the current clause is an antecedent...
+			if (then) { 		  // if a then part was being run...
+				then=0; 		  // change back to if
+				if_val=MU_MAX; 	  // and reset mu for the rule
 			}
-			inp_num=clause_val & IO_NUM; // get the referenced input number
+			inp_num=clause_val & IO_NUM; 		 // get the referenced input number
 			label=(clause_val & LABEL_NUM) / 16; // get the referenced membership function
-			mu=compute_memval(inp_num, label);// get value of mu for this clause
+			mu=compute_memval(inp_num, label);	 // get value of mu for this clause
 			if (operator) { // if this is an OR operation...
 				if (mu > if_val) { // implement the MAX function
 					if_val=mu;
 				}
-			} else { // if this is an AND operation
+			} else { 			   // if this is an AND operation
 				if (mu < if_val) { // implement the MIN function
 					if_val=mu;
 				}
@@ -126,5 +199,7 @@ void defuzzify(void) {
 	normalize(); // change fuzzy output to normal output
 }
 
+void normalize (void){
 
+}
 
