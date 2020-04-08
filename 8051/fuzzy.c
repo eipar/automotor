@@ -55,7 +55,7 @@ unsigned char code input_memf[INPUT_TOT][MF_TOT][4]={
 		{ 0x00, 0x15, 0x19, 0x14 }, // A_LOW
 		{ 0x19, 0x0A, 0x72, 0x0A }, // A_MEDIUM
 		{ 0x72, 0x0A, 0xBF, 0x0A }, // A_HIGH
-		{ 0xBF, 0x0A, 0xFF, 0x0 }  // A_VHIGH
+		{ 0xBF, 0x0A, 0xFF, 0x00 }  // A_VHIGH
 	}
 };
 
@@ -63,7 +63,7 @@ unsigned char code output_memf[OUTPUT_TOT][MF_TOT]={
 		// output membership singletons
 		// The first dimension is the output number, the second is
 		// the label number
-{ M_OFF, M_LOW, M_MEDIUM, M_HIGH, M_VHIGH, M_MAX} 
+{ V_OFF, V_LOW, V_MEDIUM, V_HIGH, V_VHIGH, V_MAX} 
 // motor speed singletons:
 // V_OFF, V_LOW, V_MEDIUM, V_HIGH, V_VHIGH,  V_MAX
 
@@ -71,8 +71,8 @@ unsigned char code output_memf[OUTPUT_TOT][MF_TOT]={
 
 unsigned char outputs[OUTPUT_TOT][MF_TOT], // fuzzy output mu values
 			  fuzzy_out[OUTPUT_TOT]; // fuzzy engine outputs
-unsigned char input[INPUT_TOT] ={ // fuzzified inputs
-				0, 0};
+unsigned char input[INPUT_TOT]; // ={ // fuzzified inputs
+//				0, 0};
 
 /*****************************************************************
 Function: fuzzy_engine

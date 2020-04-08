@@ -29,7 +29,7 @@
 #define  V_MEDIUM	0xA0
 #define  V_HIGH		0xB0
 #define  V_VHIGH	0xC0
-#define  V_MAX		0xD6
+#define  V_MAX		0xD0
 
 //define the values off PWM related to the putput singletons
 #define  M_OFF		0xFF

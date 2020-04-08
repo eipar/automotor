@@ -18,7 +18,7 @@ void main ( void )
 	
 	EA = 1;	 // activo las interrupciones
 
-	input[0] =0x00; input[1] = 0x08;
+	input[0] =0x00; input[1] = 0x3B;
 
 	
 	while( 1 )
@@ -42,6 +42,7 @@ void main ( void )
 			fuzzy_engine();
 
 			aux = fuzzy_out[0];
+			PCA0CPH0 = aux;
 		}
 
 	}
