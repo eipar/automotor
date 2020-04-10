@@ -10,7 +10,8 @@ volatile bit check_fuzzy;
 void main ( void )
 {
 	float temp_med;
-	char  temp_fuzzy_in, aux;
+	unsigned char  temp_fuzzy_in;
+	unsigned char  aux;
 
 	PLACA_Init( );
 
@@ -18,7 +19,9 @@ void main ( void )
 	
 	EA = 1;	 // activo las interrupciones
 
-	input[0] =0x00; input[1] = 0x3B;
+	input[0] =0x00; 
+	// input[1] = 0x3B;
+	input[1] = 0x3B;
 
 	
 	while( 1 )
@@ -32,8 +35,9 @@ void main ( void )
 			temp_med = LeerTemp( );
 			check_status_sensor( temp_med );
 
-			temp_fuzzy_in = (char) temp_med;
+			temp_fuzzy_in = (unsigned char) (temp_med + 50);
 			input[0] = temp_fuzzy_in;
+			temp_fuzzy_in = 0;
 		}
 
 		if(check_fuzzy)
@@ -54,11 +58,14 @@ void timertick ( void ) interrupt 1
 	static unsigned int ticks_gpio = 100;
 	static unsigned int ticks_pwm = 100;
 
+	static unsigned int ticks_acel = 100;
+
 	reset_system_timer ();
 
 	ticks_sensores--;
 	ticks_gpio--;
 	ticks_pwm--;
+	ticks_acel--;
 	
 	if( !ticks_sensores )
 	{	
@@ -76,26 +83,31 @@ void timertick ( void ) interrupt 1
 //		}
 //	}
 
-	//El Duty del PWM varia con los botoncitos del kit
-	if( !ticks_pwm ){
-		ticks_pwm = 100;
-		check_fuzzy = 1;
-		if(PWM_MAX_STATUS){
-			PWM_VAL_INI;
-		}else{
-			if(tact0_STATUS) 
-			{PMW_0_DUTY;}
-			else if (tact1_STATUS)
-			{PWM_SPEED_DOWN;}
-			else if (tact2_STATUS)
-			{PWM_SPEED_UP;}
-			else if (tact3_STATUS) 
-			{PWM_ON;}
-		}
-	}
-
+//	//El Duty del PWM varia con los botoncitos del kit
 //	if( !ticks_pwm ){
 //		ticks_pwm = 100;
 //		check_fuzzy = 1;
+//		if(PWM_MAX_STATUS){
+//			PWM_VAL_INI;
+//		}else{
+//			if(tact0_STATUS) 
+//			{PMW_0_DUTY;}
+//			else if (tact1_STATUS)
+//			{PWM_SPEED_DOWN;}
+//			else if (tact2_STATUS)
+//			{PWM_SPEED_UP;}
+//			else if (tact3_STATUS) 
+//			{PWM_ON;}
+//		}
 //	}
+
+	if( !ticks_pwm ){
+		ticks_pwm = 100;
+		check_fuzzy = 1;
+	}
+
+	if( !ticks_acel){
+	 	ticks_acel = 100;
+		input[1]++;
+	}
 }

@@ -54,7 +54,7 @@ void TIMER_Init ( void )
 	ET0		=	1;		//prendo la interrupcion del timer
 }
 
-void PCA_Init()
+void PCA_Init( void )
 {
     PWM_ENABLE; 	  //PCA0CN    = 0x40; //PWN ON
     PCA0MD    = 0x08; //Fuente SYCLK

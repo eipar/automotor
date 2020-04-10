@@ -42,12 +42,12 @@ unsigned char code input_memf[INPUT_TOT][MF_TOT][4]={
 		// point/slope data
 	// membership functions for temperature
 	{
-		{ 0x00, 0x00, 0x70, 0x11 }, // T_VLOW
-		{ 0x70, 0x11, 0x8E, 0x11 }, // T_LOW
-		{ 0x8E, 0x11, 0xAC, 0x11 }, // T_MEDIUM
-		{ 0xAC, 0x11, 0xBB, 0x11 }, // T_HIGH
-		{ 0xBB, 0x11, 0xCA, 0x11 }, // T_VHIGH
-		{ 0xCA, 0x11, 0xFF, 0x00 }	// T_CRITICAL
+		{ 0x0D, 0x00, 0x72, 0x14 }, // T_VLOW
+		{ 0x72, 0x14, 0x8C, 0x12 }, // T_LOW
+		{ 0x8C, 0x12, 0xA7, 0x12 }, // T_MEDIUM
+		{ 0xA7, 0x12, 0xB5, 0x14 }, // T_HIGH
+		{ 0xB5, 0x14, 0xC2, 0x12 }, // T_VHIGH
+		{ 0xC2, 0x12, 0xF1, 0x00 }	// T_CRITICAL
 	},
 	// membership functions for acceleration
 	{
@@ -201,5 +201,42 @@ void defuzzify(void) {
 
 void normalize (void){
 
-}
+	unsigned char aux;
 
+	//sometimes the output is not in the form 0xX0
+	//so we round it
+	aux = fuzzy_out[0];
+	if ( aux&0x0F >= 0x08 )
+	{
+		aux = ((aux & 0xF0)+ 0x10);
+	}
+	else
+	{
+		aux = aux & 0xF0;
+	}
+	// we replace de fuzzy output for the PWM values 
+	switch (aux)
+	{
+		case V_OFF:
+			fuzzy_out[0] = M_OFF;
+			break;
+		case V_LOW:
+			fuzzy_out[0] = M_LOW;
+			break;
+		case V_MEDIUM:
+			fuzzy_out[0] = M_MEDIUM;
+			break;
+		case V_HIGH:
+			fuzzy_out[0] = M_HIGH;
+			break;
+		case V_VHIGH:
+			fuzzy_out[0] = M_VHIGH;
+			break;
+		case V_MAX:
+			fuzzy_out[0] = M_MAX;
+			break;
+		default:
+			fuzzy_out[0] = M_LOW;
+			break;
+	}
+}
