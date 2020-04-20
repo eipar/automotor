@@ -67,6 +67,9 @@
 #define 	freno_OFF		setbitp( P1, 0, ACTIVO_ALTO )
 #define		freno_ON		clrbitp( P1, 0, ACTIVO_ALTO )
 
+//Define para el PCA0
+#define 	TIME_13BITS		2500
+
 //-----------------------------------------------------------------------------------------------
 // Prototipos de funciones
 //-----------------------------------------------------------------------------------------------

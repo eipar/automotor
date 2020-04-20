@@ -7,7 +7,12 @@ void main ( void )
 {
 	PLACA_Init( );
 	
-	EA = 1;	 // activo las interrupciones
+	//EA = 1;	 // activo las interrupciones
+
+	led1_OFF;
+	led2_OFF;
+	led3_OFF;
+	led4_OFF;
 
 	while( 1 )
 	{
@@ -34,24 +39,43 @@ void timertick ( void ) interrupt 1
 }
 
 
-void ext_int_0_handler (void) interrupt 0 
+void pca0_handler (void) interrupt 9 
 {
-	if () //el puerto esta en 0
+	//static unsigned char count_neg_low, count_neg_high, count_pos_low, count_pos_high;
+	unsigned char count_pos_low, count_pos_high;
+	int total_time;
+
+	CCF1 = 0; //bajo el flag de interrupcion
+
+	led1_ON;
+
+	if ((PCA0CPM1 & 0x10)) //esta configurado en neg edge
 	{     //fue neg edge
-		  //tengo que prender un timer o algo
-		  //pasar a interrupcion de pos edge
+		  PCA0L     = 0x00;	 //lo reseteo, no me interesa su valor actual
+          PCA0H     = 0x00;
+		  PCA0CPM1  = 0x21; //pasar a interrupcion a pos edge
 	}
 	else
 	{	  //fue interrupcion de pos edge
-		  //termino de contar con lo que sea que conte
-		  if () //cuenta llego al valor minimo?
+		  count_pos_low  = PCA0CPL1;
+		  count_pos_high = PCA0CPH1;
+
+		  total_time = (count_pos_high << 8) + count_pos_low;
+
+		  if (total_time > TIME_13BITS) //cuenta llego al valor minimo?
 		  {		//prendo la uart
+		  		//SCON0 = SCON0 | 0x10;  //prendo el bit 4, recepcion habilitada
+				led4_ON;
+				led2_OFF;
 		  }
 		  else
 		  {
-		  		//genero algun error del byte largo malo
+		  		led4_OFF;//genero algun error del byte largo malo
+				led2_ON;
 		  }
 
+		  //esto no va aca, sino cuando termino de operar el LIN
+		  PCA0CPM1  = 0x11; //pasar a interrupcion a neg edge
 	}
 
 }

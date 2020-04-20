@@ -14,16 +14,17 @@ void PORT_Init(void)
 {
     // P0.0  -  TX0 (UART0), Push-Pull,  Digital
     // P0.1  -  RX0 (UART0), Push-Pull,  Digital
-    // P0.2  -  CEX0 (PCA),  Push-Pull,  Digital
-    // P0.3  -  Unassigned,  Push-Pull,  Digital
-    // P0.4  -  Unassigned,  Push-Pull,  Digital
-    // P0.5  -  Unassigned,  Push-Pull,  Digital
+    // P0.2  -  TX1 (UART1), Push-Pull,  Digital
+    // P0.3  -  RX1 (UART1), Push-Pull,  Digital
+    // P0.4  -  CEX0 (PCA),  Push-Pull,  Digital
+    // P0.5  -  CEX1 (PCA),  Push-Pull,  Digital
     // P0.6  -  Unassigned,  Push-Pull,  Digital
     // P0.7  -  Unassigned,  Push-Pull,  Digital
+
     P0MDOUT   = 0xFF;
     P74OUT    = 0x08;
-    XBR0      = 0x0C;
-    XBR2      = 0x40;	
+    XBR0      = 0x14;
+    XBR2      = 0x44;	
  			  
 	P74OUT	=	0x08;	//P5H en Push-Pull
 	
@@ -43,6 +44,29 @@ void TIMER_Init ( void )
 	TL0		=	0xCC;	//valores iniciales
 	TR0		=	1;		//prendo timer0
 	ET0		=	1;		//prendo la interrupcion del timer
+
+	//ahora la parte de seteo para el timer1 de la uart 0
+	CKCON     = 0x10;   		// el timer1 usa el SYSCLK de base
+    TMOD      = TMOD | 0x20;	// el timer1 en modo 8bit con auto reload
+    TH1       = 0xB8;			// valor para 9600bps
+}
+
+void PCA_Init()
+{
+    PCA0CN    = 0x40;   // prendo el PCA
+    PCA0CPM1  = 0x11;   // configuro el modulo 1 en neg edge y activo la interrupcion
+}
+
+void UART_Init()
+{
+    //SCON0     = 0x50;	 // modo 1, receptor prendido
+	//SCON0		= 0x40;	 // modo 1, receptor apagado por ahora 
+}
+
+void Interrupts_Init()
+{
+    IE        = 0x92;	//activo las interrupciones
+    EIE1      = 0x08;	//activo las interrupciones del PCA
 }
 
 void PLACA_Init ( void )
@@ -52,7 +76,10 @@ void PLACA_Init ( void )
 	 
 	XTAL_Init( );
 	PORT_Init( );
-	TIMER_Init( );
+	PCA_Init();
+	TIMER_Init();
+	UART_Init();
+	Interrupts_Init();
 }
 
 //------------------------------------------------------------------------------
