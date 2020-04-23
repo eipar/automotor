@@ -68,7 +68,27 @@
 #define		freno_ON		clrbitp( P1, 0, ACTIVO_ALTO )
 
 //Define para el PCA0
-#define 	TIME_13BITS		2500
+#define 	TIME_13BITS		1300 //2500
+#define		PCA_ON_POSEDGE	(PCA0CPM1  = 0x21)
+#define		PCA_ON_NEGEDGE 	(PCA0CPM1  = 0x11)
+#define		PCA_INT_ON		(EIE1 = EIE1 | 0x08)
+#define		PCA_INT_OFF		(EIE1 = EIE1 & 0xF7)
+
+//Macros para la UART
+#define ARRANCAR_TX		(SCON1 = SCON1 | 0x02)
+#define TX				(SCON1 & 0x02)
+#define RX				(SCON1 & 0x01)
+#define APAGAR_TX		(SCON1 = SCON1 & 0xFD )
+#define APAGAR_RX		(SCON1 = SCON1 & 0xFE )
+#define BUFER_RX_TX		SBUF1
+
+#define ESPERA			0
+#define	SYNC_BREAK_OK	1
+#define	REC_DATA		2
+#define	SEND_DATA		3
+#define ID_REC_DATA		58
+#define ID_SEND_DATA	59
+#define MAX_REC_BYTES	3
 
 //-----------------------------------------------------------------------------------------------
 // Prototipos de funciones
@@ -78,6 +98,13 @@ void		PLACA_Init	    	( void );
 
 void 		reset_system_timer  ( void );
 void 		check_board_live 	( void );
+
+void PushTx(unsigned char dato);
+void PushRx(unsigned char dato);
+int PopRx (void);
+int PopTx (void);
+void Transmitir( char *msg);
+void Mensajes (void );
 
 //===============================================================================================
 //-----------------------------------------------------------------------------------------------

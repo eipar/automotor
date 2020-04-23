@@ -21,7 +21,7 @@ void PORT_Init(void)
     // P0.6  -  Unassigned,  Push-Pull,  Digital
     // P0.7  -  Unassigned,  Push-Pull,  Digital
 
-    P0MDOUT   = 0xFF;
+    //P0MDOUT   = 0xFF;
     P74OUT    = 0x08;
     XBR0      = 0x14;
     XBR2      = 0x44;	
@@ -48,6 +48,7 @@ void TIMER_Init ( void )
 	//ahora la parte de seteo para el timer1 de la uart 0
 	CKCON     = 0x10;   		// el timer1 usa el SYSCLK de base
     TMOD      = TMOD | 0x20;	// el timer1 en modo 8bit con auto reload
+	TR1		=	1;				// prendo timer1
     TH1       = 0xB8;			// valor para 9600bps
 }
 
@@ -60,13 +61,14 @@ void PCA_Init()
 void UART_Init()
 {
     //SCON0     = 0x50;	 // modo 1, receptor prendido
-	//SCON0		= 0x40;	 // modo 1, receptor apagado por ahora 
+	SCON1		= 0x40;	 // UART1, modo 1, receptor apagado por ahora 
 }
 
 void Interrupts_Init()
 {
     IE        = 0x92;	//activo las interrupciones
     EIE1      = 0x08;	//activo las interrupciones del PCA
+	EIE2      = 0x40;	//activo las interrupciones de la UART
 }
 
 void PLACA_Init ( void )
