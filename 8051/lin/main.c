@@ -4,6 +4,7 @@
 volatile bit check_temp;
 
 volatile bit flag_msg;
+volatile unsigned char Temp, Diag;
 extern unsigned char flagTx;
 extern unsigned char Rx_In;
 
@@ -18,10 +19,14 @@ void main ( void )
 	led3_OFF;
 	led4_OFF;
 
+	Temp = 0x55; Diag = 0xAA;
+		  
 	while( 1 )
 	{
 		//test de si esto esta vivo o no
 		check_board_live();
+
+		Temp = P4;
 
 		if(flag_msg == 1)
 		{
@@ -57,7 +62,7 @@ void pca0_handler (void) interrupt 9
 
 	CCF1 = 0; //bajo el flag de interrupcion
 
-	led1_ON;
+	//led1_ON;
 
 	if ((PCA0CPM1 & 0x10)) //esta configurado en neg edge
 	{     //fue neg edge
@@ -74,7 +79,7 @@ void pca0_handler (void) interrupt 9
 
 		  if (total_time > TIME_13BITS) //cuenta llego al valor minimo?
 		  {		
-				led4_ON;
+				led1_ON;
 				led2_OFF;
 				PCA_INT_OFF; //EIE1 = EIE1 & 0xF7;//desactivar la interrupcion del modulo
 				//prendo la uart
@@ -82,7 +87,7 @@ void pca0_handler (void) interrupt 9
 		  }
 		  else
 		  {
-		  		led4_OFF;//genero algun error del byte largo malo
+		  		led1_OFF;//genero algun error del byte largo malo
 				led2_ON;
 		  }
 
@@ -95,10 +100,13 @@ void pca0_handler (void) interrupt 9
 void uart0_handler (void) interrupt 20
 {
 	unsigned char dato;
-	int dato1, checksum;
+	int dato1;
+	unsigned char checksum;
+	//unsigned char data_to_send[8];
 
 	//MaqEst para decodificar
 	static char estado = ESPERA;
+	static unsigned char Rx_count;
 
 	if ( RX )
 	{
@@ -117,12 +125,20 @@ void uart0_handler (void) interrupt 20
 			}
 			else if (dato == ID_SEND_DATA)
 			{
-				estado = SEND_DATA; //tengo que mandar yo el dato
-				PushTx(0xAA);
-				PushTx(0x99);
-				//checksum = calculate_checksum(algo);
+				estado = ESPERA; //tengo que mandar yo el dato y terminar
+				PushTx(Temp); //data_to_send[0] = Temp;
+				PushTx(Diag); //data_to_send[1] = Diag;
+				//PushTx(Temp); //data_to_send[2] = Temp;
+				//PushTx(Diag); //data_to_send[3] = Diag;
+				//PushTx(Temp); //data_to_send[4] = Temp;
+				//PushTx(Diag); //data_to_send[5] = Diag;
+				//PushTx(Temp); //data_to_send[6] = Temp;
+				//PushTx(Diag); //data_to_send[7] = Diag;
+				//checksum = calculate_checksum_send(8,&data_to_send);
 				checksum = 0x81;
 				PushTx(checksum);
+				SCON1 = SCON1 & 0xEF;  //apago el bit 4, recepcion deshabilitada
+				delay(2000);
 				if ( !flagTx ) //si no esta prendido el transmisor, lo prendo
 				{
 					flagTx = 1;	
@@ -138,11 +154,16 @@ void uart0_handler (void) interrupt 20
 		else if (estado == REC_DATA)
 		{
 			PushRx(dato);
-			if (Rx_In == MAX_REC_BYTES)
+			Rx_count++;
+			if (Rx_count == MAX_REC_BYTES)
 			{
+				Rx_count = 0x00;
 				flag_msg = 1;
 				estado = ESPERA;
 				//volver a activar el edge detector
+				PCA_ON_NEGEDGE; //PCA0CPM1  = 0x11; //configuro el pca en neg edge
+				PCA_INT_ON; //EIE1 = EIE1 | 0x08;	//prendo su interrupcion
+				SCON1 = SCON1 & 0xEF;  //apago el bit 4, recepcion deshabilitada
 			}
 		}
 	}
@@ -159,5 +180,6 @@ void uart0_handler (void) interrupt 20
 			estado = ESPERA;
 			PCA_ON_NEGEDGE; //PCA0CPM1  = 0x11; //configuro el pca en neg edge
 			PCA_INT_ON; //EIE1 = EIE1 | 0x08;	//prendo su interrupcion
+		    SCON1 = SCON1 & 0xEF;  //apago el bit 4, recepcion deshabilitada
 	}
 }

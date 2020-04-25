@@ -1,10 +1,10 @@
 #include	<controlador.h>
 	
-#define MAX_TX	9
-#define MAX_RX	11
+#define MAX_TX	20
+#define MAX_RX	20
 
 
-#define MAX_PALABRA		10
+#define MAX_PALABRA		9
 
 volatile unsigned char BUF_TX[MAX_TX];
 volatile unsigned char BUF_RX[MAX_RX];
@@ -71,10 +71,19 @@ int PopTx (void)
 void Mensajes (void )
 {
 	static char inx = 0;
-	char dato[MAX_REC_BYTES];
+	unsigned char dato[MAX_REC_BYTES];
+	unsigned char gen_checksum;
 
 	for (inx = 0; inx < MAX_REC_BYTES; inx++)
 	{
 		dato[inx] = PopRx();
 	}
+
+	gen_checksum = calculate_checksum(dato[0],dato[1]);
+
+	if ( gen_checksum != dato[2])
+	{
+		led3_ON; //algo malio sal
+	}
+
 }

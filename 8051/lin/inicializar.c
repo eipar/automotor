@@ -28,7 +28,7 @@ void PORT_Init(void)
  			  
 	P74OUT	=	0x08;	//P5H en Push-Pull
 	
-	
+	P4 = 0xFF;	
 	
 }
 

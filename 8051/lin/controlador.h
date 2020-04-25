@@ -86,9 +86,16 @@
 #define	SYNC_BREAK_OK	1
 #define	REC_DATA		2
 #define	SEND_DATA		3
-#define ID_REC_DATA		58
-#define ID_SEND_DATA	59
+//Necesito recibir el estado de aceleracion, con un byte me alcanza
+//Necesito transmitir la temperatura y algun coso de diagnostico, 2 bytes
+//entonces puedo usar los ID 0 y 1
+//que con los bits de paridad se convierten en:
+#define ID_REC_DATA		0x80
+#define ID_SEND_DATA	0xC1
+//segun la norma
+
 #define MAX_REC_BYTES	3
+
 
 //-----------------------------------------------------------------------------------------------
 // Prototipos de funciones
@@ -99,12 +106,14 @@ void		PLACA_Init	    	( void );
 void 		reset_system_timer  ( void );
 void 		check_board_live 	( void );
 
-void PushTx(unsigned char dato);
-void PushRx(unsigned char dato);
+void PushTx(unsigned char );
+void PushRx(unsigned char );
 int PopRx (void);
 int PopTx (void);
-void Transmitir( char *msg);
+void Transmitir( char *);
 void Mensajes (void );
+unsigned char calculate_checksum( unsigned char, unsigned char );
+unsigned char calculate_checksum_send( unsigned char, unsigned char *);
 
 //===============================================================================================
 //-----------------------------------------------------------------------------------------------
