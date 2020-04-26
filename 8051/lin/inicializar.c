@@ -50,6 +50,10 @@ void TIMER_Init ( void )
     TMOD      = TMOD | 0x20;	// el timer1 en modo 8bit con auto reload
 	TR1		=	1;				// prendo timer1
     TH1       = 0xB8;			// valor para 9600bps
+
+	//dejo el timer2 listo para empezar a contar cuando necesite la demora del LIN
+    RCAP2H    = 0xE0;
+    TH2       = 0xE0;
 }
 
 void PCA_Init()

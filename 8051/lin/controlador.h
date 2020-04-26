@@ -113,7 +113,6 @@ int PopTx (void);
 void Transmitir( char *);
 void Mensajes (void );
 unsigned char calculate_checksum( unsigned char, unsigned char );
-unsigned char calculate_checksum_send( unsigned char, unsigned char *);
 
 //===============================================================================================
 //-----------------------------------------------------------------------------------------------

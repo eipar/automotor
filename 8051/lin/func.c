@@ -19,17 +19,5 @@ unsigned char calculate_checksum( unsigned char byte0, unsigned char byte1 )
 {
 	unsigned char suma;
 	suma = ~(byte0+byte1);
-
 	return suma;
 }
-
-//unsigned char calculate_checksum_send( unsigned char cant_bytes, unsigned char * datos )
-//{
-//	unsigned char suma, inx;
-//	for (inx=0;inx < cant_bytes; inx++)
-//	{
-//		suma = suma + datos[inx];
-//	}
-//	suma = ~suma;
-//	return suma;
-//}
