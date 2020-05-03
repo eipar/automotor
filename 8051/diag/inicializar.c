@@ -61,7 +61,7 @@ void TIMER_Init ( void )
 void PCA_Init()
 {
     PWM_ENABLE; 	  //PCA0CN    = 0x40; //PWN ON
-    PCA0MD    = 0x08; //Fuente SYCLK
+    PCA0MD    = 0x02; //Fuente SYCLK
     //PCA0CPM0  = 0x42; //PWM de 8bits de resolucion
     PWM_VAL_INI;	  //PCA0CPH0  = 0x40; //Valor inicial de 0x40
 	PWM_ON;			  //arranca
