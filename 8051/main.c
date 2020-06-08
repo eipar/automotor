@@ -9,11 +9,12 @@ volatile unsigned char Temp, Diag;
 extern unsigned char flagTx;
 extern unsigned char Rx_In;
 
+volatile unsigned char Temp, Diag;
+
 void main ( void )
 {
 	float temp_med;
 	unsigned char  temp_fuzzy_in;
-	//unsigned char  aux;
 
 	PLACA_Init( );
 
@@ -24,6 +25,7 @@ void main ( void )
 	input[0] =0x00;
 	input[1] = 0x3B;
 
+   	Diag = 0xAA;
 	
 	while( 1 )
 	{
@@ -37,6 +39,7 @@ void main ( void )
 			check_status_sensor( temp_med );
 
 			temp_fuzzy_in = (unsigned char) (temp_med + 50);
+			Temp = temp_fuzzy_in; 
 			input[0] = temp_fuzzy_in;
 			temp_fuzzy_in = 0;
 		}
@@ -45,9 +48,6 @@ void main ( void )
 		{
 		 	check_fuzzy = 0;
 			fuzzy_engine();
-
-			//aux = fuzzy_out[0];
-			//PCA0CPH0 = aux;
 			PCA0CPH0 = fuzzy_out[0];
 			
 		}
@@ -67,30 +67,17 @@ void timertick ( void ) interrupt 1
 	static unsigned int ticks_gpio = 100;
 	static unsigned int ticks_pwm = 100;
 
-	//static unsigned int ticks_acel = 100;
-
 	reset_system_timer ();
 
 	ticks_sensores--;
 	ticks_gpio--;
 	ticks_pwm--;
-	//ticks_acel--;
-	
+
 	if( !ticks_sensores )
 	{	
 		check_temp = 1;
 		ticks_sensores = 1000;
 	}		 
-
-//	//El Duty del PWM varia automaricamente, para mostrar que funciona el medio puente H
-//	if( !ticks_pwm ){
-//		ticks_pwm = 100;
-//		if(PWM_MAX_STATUS){
-//			PWM_VAL_INI;
-//		}else{
-//			PWM_UP;
-//		}
-//	}
 
 //	//El Duty del PWM varia con los botoncitos del kit
 //	if( !ticks_pwm ){
@@ -114,11 +101,6 @@ void timertick ( void ) interrupt 1
 		ticks_pwm = 100;
 		check_fuzzy = 1;
 	}
-
-	//if( !ticks_acel){
-	// 	ticks_acel = 100;
-	//	input[1]++;
-	//}
 }
 
 void pca0_handler (void) interrupt 9 

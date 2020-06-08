@@ -39,7 +39,7 @@ void ADC_Init ( void )
 {
 	// Seteos para el conversor AD, para la temperatura
 	REF0CN    = 0x03; // Uso VREF0, biase=1, sino no anda
-	EIE2	=	0x02; // Activada la interrupcion de fin de conversion
+	EIE2	=	EIE2 | 0x02; // Activada la interrupcion de fin de conversion
 	AMX0CF	=	0x00; // Todas entradas singles, ninguna diferencial
 	AMX0SL	=	0x02; // Uso AIN0.2
 	ADC0CF	=	0x78; // Muestreo a 345,6 KHz(bajar muuuucho), sin ganancia
@@ -101,7 +101,7 @@ void PLACA_Init ( void )
 
     IE        = 0x92;	//activo las interrupciones
     EIE1      = 0x08;	//activo las interrupciones del PCA
-	EIE2      = 0x40;	//activo las interrupciones de la UART
+	EIE2      = EIE2 | 0x40;	//activo las interrupciones de la UART
 }
 
 //------------------------------------------------------------------------------
