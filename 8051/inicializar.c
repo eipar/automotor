@@ -12,19 +12,26 @@ void XTAL_Init(void)
 
 void PORT_Init(void)
 {
-	XBR0	=	0x0C;	// UART0 TX-RX P0.0-1 y PWM0 en P0.2
-    XBR1	=	0x80;	// SYSCLK en  P0.3
-    XBR2	=	0x42;	// Enable crossbar y low port EMI habilitado
+	// P0.0  -  TX0 (UART0), Push-Pull,  Digital
+    // P0.1  -  RX0 (UART0), Push-Pull,  Digital
+    // P0.2  -  TX1 (UART1), Push-Pull,  Digital
+    // P0.3  -  RX1 (UART1), Push-Pull,  Digital
+    // P0.4  -  CEX0 (PCA),  Push-Pull,  Digital
+    // P0.5  -  CEX1 (PCA),  Push-Pull,  Digital
+    // P0.6  -  Unassigned,  Push-Pull,  Digital
+    // P0.7  -  Unassigned,  Push-Pull,  Digital
 
-	P0MDOUT   = 0x0C;   //PWM Y SYSCLK en push-pull (?)   			  
-	P1MDOUT	=	0x00;   //todo open drain   
-	P2MDOUT	=	0x00;   //todo open drain   
-	P3MDOUT	=	0x00;   //todo open drain   
+    //P0MDOUT   = 0xFF;
+    P74OUT    = 0x08;
+    XBR0      = 0x14;
+    XBR2      = 0x44;
+  
 	P74OUT	=	0x08;	//P5H en Push-Pull
+	P1MDOUT   = 0xFF;	//P1  en Push-Pull
 	
 	P0		=	0x00;
 	P3		=	0x00;
-	P4		=	0x00;
+	P4		=	0xFF;
 	P5		=	0x0F;
 	
 }
@@ -33,7 +40,7 @@ void ADC_Init ( void )
 {
 	// Seteos para el conversor AD, para la temperatura
 	REF0CN    = 0x03; // Uso VREF0, biase=1, sino no anda
-	EIE2	=	0x02; // Activada la interrupcion de fin de conversion
+	EIE2	=	EIE2 | 0x02; // Activada la interrupcion de fin de conversion
 	AMX0CF	=	0x00; // Todas entradas singles, ninguna diferencial
 	AMX0SL	=	0x02; // Uso AIN0.2
 	ADC0CF	=	0x78; // Muestreo a 345,6 KHz(bajar muuuucho), sin ganancia
@@ -52,16 +59,33 @@ void TIMER_Init ( void )
 	TL0		=	0xCC;	//valores iniciales
 	TR0		=	1;		//prendo timer0
 	ET0		=	1;		//prendo la interrupcion del timer
+
+	//ahora la parte de seteo para el timer1 de la uart 0
+	CKCON     = 0x10;   		// el timer1 usa el SYSCLK de base
+    TMOD      = TMOD | 0x20;	// el timer1 en modo 8bit con auto reload
+	TR1		=	1;				// prendo timer1
+    TH1       = 0xB8;			// valor para 9600bps
+
+	//dejo el timer2 listo para empezar a contar cuando necesite la demora del LIN
+    RCAP2H    = 0xE0;
+    TH2       = 0xE0;
 }
 
 void PCA_Init( void )
 {
     PWM_ENABLE; 	  //PCA0CN    = 0x40; //PWN ON
-    PCA0MD    = 0x08; //Fuente SYCLK
+    PCA0MD    = 0x00; //Fuente SYCLK/12
     //PCA0CPM0  = 0x42; //PWM de 8bits de resolucion
     PWM_VAL_INI;	  //PCA0CPH0  = 0x40; //Valor inicial de 0x40
 	PWM_ON;			  //arranca
 	PMW_0_DUTY;		  //pero arranca apagado
+	PCA0CPM1  = 0x11;   // configuro el modulo 1 en neg edge y activo la interrupcion
+}
+
+void UART_Init()
+{
+    //SCON0     = 0x50;	 // modo 1, receptor prendido
+	SCON1		= 0x40;	 // UART1, modo 1, receptor apagado por ahora 
 }
 
 void PLACA_Init ( void )
@@ -74,8 +98,11 @@ void PLACA_Init ( void )
 	ADC_Init( );
 	TIMER_Init( );
 	PCA_Init();
+	UART_Init();
 
-//	EA		=	1;
+    IE        = 0x92;	//activo las interrupciones
+    EIE1      = 0x08;	//activo las interrupciones del PCA
+	EIE2      = EIE2 | 0x40;	//activo las interrupciones de la UART
 }
 
 //------------------------------------------------------------------------------

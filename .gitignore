@@ -21,7 +21,31 @@ Documentation/Fuzzy/~$Fuzzy Table.xlsx
 8051/ExtDll.iex
 8051/controlador_uvopt.bak
 8051/controlador.uvgui_Francisco.bak
-Hardware/__Previews/CAN_SCH.SchDocPreview
+8051/lin/lin.lnp
+8051/lin/lin
+8051/lin/lin.M51
+8051/lin/lin.plg
+8051/lin/lin.uvgui_Francisco.bak
+8051/lin/lin_uvopt.bak
+8051/lin/lin_uvproj.bak
+Hardware/debug.log
+Hardware/History/RAD.~(1).PrjPcb.Zip
+Hardware/__Previews/LIN_SCH.SchDocPreview
 Hardware/__Previews/Stick_LPC.SchDocPreview
+Hardware/__Previews/8051_SCH.SchDocPreview
+Hardware/__Previews/CAN_SCH.SchDocPreview
+Hardware/__Previews/PCB_RAD.PcbDocPreview
 Hardware/__Previews/TOP_SCH.SchDocPreview
-Hardware/PCB_RAD.PcbDoc.htm
+8051/diag/diag.lnp
+8051/diag/diag.M51
+8051/diag/diag
+8051/diag/diag.plg
+8051/diag/diag_uvproj.bak
+8051/diag/ExtDll.iex
+Simulation/sensadocorriente.net
+8051/diag/diag.uvgui_Francisco.bak
+8051/diag/diag_uvopt.bak
+Hardware/Project Outputs for RAD/Design Rule Check - PCB_RAD.drc
+Hardware/Project Outputs for RAD/Design Rule Check - PCB_RAD.html
+Simulation/sensadocorriente.plt
+Simulation/controlador.plt

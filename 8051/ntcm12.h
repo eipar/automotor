@@ -25,10 +25,10 @@ sfr16		ADC0		=	0xBE;
 // Buffers
 //-----------------------------------------------------------------------------------------------
 #ifdef		DRIVER_NTCM12
-	data volatile int buff_temp[ MUESTRAS ];
+	xdata volatile int buff_temp[ MUESTRAS ];
 #else
 #ifndef		APLICACION
-	extern data volatile int buff_temp[ MUESTRAS ];
+	extern xdata volatile int buff_temp[ MUESTRAS ];
 #endif
 #endif
 //-----------------------------------------------------------------------------------------------

@@ -214,7 +214,7 @@
               <RCB>
                 <Type>0</Type>
                 <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <Size>0xffff</Size>
               </RCB>
               <RXB>
                 <Type>0</Type>
@@ -382,6 +382,11 @@
               <FileType>1</FileType>
               <FilePath>.\primitivas_adc.c</FilePath>
             </File>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\uart.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -396,11 +401,6 @@
               <FileName>fuzzy.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\fuzzy.h</FilePath>
-            </File>
-            <File>
-              <FileName>infotronic.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\infotronic.h</FilePath>
             </File>
             <File>
               <FileName>ntcm12.h</FileName>
