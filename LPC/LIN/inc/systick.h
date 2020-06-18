@@ -9,3 +9,6 @@ void Set_Systick_Int_Time(int);
 
 extern volatile int led_flag;
 extern volatile int lin_master_ask_moment;
+extern volatile int lin_master_write_moment;
+
+extern volatile uint8_t lin_acc;

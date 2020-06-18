@@ -27,10 +27,14 @@
 void SysTick_Handler(void)
 {
 	static int tick_led = 1000;
-	static int tick_lin_master = 500;
+	static int tick_lin_master_read  = 2500;			//0001;
+	static int tick_lin_master_write = 0001;			//2500;
+	static int tick_acc = 2000;
 
 	tick_led--;
-	tick_lin_master--;
+	tick_lin_master_read--;
+	tick_lin_master_write--;
+	tick_acc--;
 
 	if (!tick_led)
 	{
@@ -38,10 +42,42 @@ void SysTick_Handler(void)
 		led_flag = 1;
 	}
 
-	if (!tick_lin_master)
+	if (!tick_lin_master_read)
 	{
-		tick_lin_master = 499;
+		tick_lin_master_read = 4999;
 		lin_master_ask_moment = 1;
+	}
+
+	if (!tick_lin_master_write)
+	{
+		tick_lin_master_write = 4999;
+		lin_master_write_moment = 1;
+	}
+
+	if(!tick_acc)
+	{
+		tick_acc = 2000;
+		switch(lin_acc)
+		{
+			case 0:
+				lin_acc = 8;
+				break;
+			case 8:
+				lin_acc = 35;
+				break;
+			case 35:
+				lin_acc = 65;
+				break;
+			case 65:
+				lin_acc = 95;
+				break;
+			case 95:
+				lin_acc = 0;
+				break;
+			default:
+				lin_acc = 8;
+				break;
+		}
 	}
 }
 

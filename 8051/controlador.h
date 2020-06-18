@@ -82,7 +82,7 @@
 //#define		PWM_PIN_0		(clrbitp(P0, 2, ACTIVO_ALTO))
 
 //Define para el PCA0
-#define 	TIME_13BITS		1300 //2500
+#define 	TIME_13BITS		2400 //1300 //2500
 #define		PCA_ON_POSEDGE	(PCA0CPM1  = 0x21)
 #define		PCA_ON_NEGEDGE 	(PCA0CPM1  = 0x11)
 #define		PCA_INT_ON		(EIE1 = EIE1 | 0x08)
@@ -108,7 +108,15 @@
 #define ID_SEND_DATA	0xC1
 //segun la norma
 
-#define MAX_REC_BYTES	3		
+#define MAX_REC_BYTES	3
+
+#define AVISO_ON	setbitp( P0, 6, ACTIVO_ALTO)
+#define AVISO_OFF	clrbitp( P0, 6, ACTIVO_ALTO)
+#define	LIN_CS_ON	setbitp( P1, 2, ACTIVO_ALTO)		
+#define	LIN_CS_OFF	clrbitp( P1, 2, ACTIVO_ALTO)
+#define	LIN_WK_ON	setbitp( P1, 4, ACTIVO_ALTO)		
+#define	LIN_WK_OFF	clrbitp( P1, 4, ACTIVO_ALTO)
+
 
 //-----------------------------------------------------------------------------------------------
 // Prototipos de funciones

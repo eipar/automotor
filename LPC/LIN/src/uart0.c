@@ -11,6 +11,13 @@
 #include "sys_config.h"
 #include "uart.h"
 
+#define MAX_TX	20
+#define MAX_RX	20
+volatile unsigned char BUF_TX[MAX_TX];
+volatile unsigned char BUF_RX[MAX_RX];
+volatile unsigned char Tx_In,Tx_Out;
+volatile unsigned char Rx_In,Rx_Out;
+
 void Set_UART0_LIN(void)
 {
 	//Temporary registers for UART0 configuration for LIN
@@ -31,18 +38,26 @@ void Set_UART0_LIN(void)
 	Chip_UART_IntEnable(UART_LIN,uart_config_int);
 
 	//Activate Tx
-	Chip_UART_TXEnable(UART_LIN);
+	//Chip_UART_TXEnable(UART_LIN);
 
 	NVIC_SetPriority(UART0_IRQn, 1);
 	NVIC_EnableIRQ(UART0_IRQn);
 
+	//Settings for CS and WAKE of the transceiver
+	Chip_IOCON_PinMuxSet(LPC_IOCON, PORT_0, PIN_LIN_CS,   IOCON_FUNC0);
+	Chip_IOCON_PinMuxSet(LPC_IOCON, PORT_0, PIN_LIN_WAKE, IOCON_FUNC0);
+	//Always on...
+	Chip_GPIO_SetPinOutHigh(LPC_GPIO, PORT_0, PIN_LIN_CS);
+	Chip_GPIO_SetPinOutHigh(LPC_GPIO, PORT_0, PIN_LIN_WAKE);
 }
 
 void UART0_IRQHandler(void)
 {
 	uint32_t current_int;
-	uint32_t uart_status;
+	uint32_t uart0_status;
 	uint32_t data_received;
+	int8_t	 data_to_send;
+	static int8_t bytes_received;
 	//get the current interruptions
 	current_int = (Chip_UART_ReadIntIDReg(UART_LIN) & UART_IIR_INTID_MASK);
 
@@ -50,15 +65,34 @@ void UART0_IRQHandler(void)
 	{
 		case UART_IIR_INTID_THRE: //the transmition register is empty
 			//flag is clean by reading IIR before
-			//we can send something else
-			send_uart_flag = 1;
+			//we can send something else, checking LSR just in case
+	   		uart0_status = (Chip_UART_ReadLineStatus(UART_LIN) & UART_LSR_BITMASK);
+	   		uart0_status &= 0x20;
+	   		if(uart0_status == UART_LSR_THRE)
+	   		{
+	   			data_to_send = PopTx();
+	   			if(data_to_send != -1)
+	   			{
+	   				Chip_UART_SendByte(UART_LIN, data_to_send);
+	   			}
+	   		}
 			break;
 		case UART_IIR_INTID_RDA: //data was received
 			data_received = Chip_UART_ReadByte(UART_LIN); //read and clear int flag
-			//send data somewhere...
+			PushRx(data_received);
+			bytes_received++;
+			if(bytes_received == CANT_DATOS)
+			{
+				rx_fifo_full = 1;
+				bytes_received = 0;
+			}
+			else
+			{
+				rx_fifo_full = 0;
+			}
 			break;
 		case UART_IIR_INTID_RLS: //error in the line, identification needed
-			uart_status = Chip_UART_ReadLineStatus(UART_LIN); //clear int flag
+			uart0_status = Chip_UART_ReadLineStatus(UART_LIN); //clear int flag
 			//check failure? maybe later
 			break;
 		case UART_IIR_INTID_CTI: //character timeout, no use
@@ -76,48 +110,81 @@ void LIN_Send(uint32_t flag)
 	uint32_t uart0_status;
 	switch(flag)
 	{
-		case LONG_ZERO:
+		case C_LONG_ZERO:
 			//short zero, replace for long zero
-	   		uart0_status = (Chip_UART_ReadLineStatus(UART_LIN) & UART_LSR_BITMASK);
-	   		uart0_status &= 0x20;
-	   		if(uart0_status == UART_LSR_THRE)
-	   		{
-	   			Chip_UART_SendByte(UART_LIN, 0x00);
-	   		}
+//	   		uart0_status = (Chip_UART_ReadLineStatus(UART_LIN) & UART_LSR_BITMASK);
+//	   		uart0_status &= 0x20;
+//	   		if(uart0_status == UART_LSR_THRE)
+//	   		{
+//	   			Chip_UART_SendByte(UART_LIN, 0x00);
+//	   		}
+			Chip_IOCON_PinMuxSet(LPC_IOCON, PORT_0, PIN_2_TXD0, IOCON_FUNC0);
+			Chip_GPIO_SetPinDIROutput(LPC_GPIO, PORT_0, PIN_2_TXD0);
+			Chip_GPIO_SetPinOutLow(LPC_GPIO, PORT_0, PIN_2_TXD0);
+			Chip_TIMER_Enable(LPC_TIMER0);
 			break;
-		case SYNC_BREAK:
-	   		uart0_status = (Chip_UART_ReadLineStatus(UART_LIN) & UART_LSR_BITMASK);
-	   		uart0_status &= 0x20;
-	   		if(uart0_status == UART_LSR_THRE)
-	   		{
-	   			Chip_UART_SendByte(UART_LIN, 0x55);
-	   		}
+		case C_SYNC_BREAK:
+			//PushTx(SYNC_BREAK);
+			uart0_status = (Chip_UART_ReadLineStatus(UART_LIN) & UART_LSR_BITMASK);
+			uart0_status &= 0x20;
+			if(uart0_status == UART_LSR_THRE)
+			{
+				Chip_UART_SendByte(UART_LIN, 0x55);
+			}
 			break;
-		case SLAVE_ID:
-	   		uart0_status = (Chip_UART_ReadLineStatus(UART_LIN) & UART_LSR_BITMASK);
-	   		uart0_status &= 0x20;
-	   		if(uart0_status == UART_LSR_THRE)
-	   		{
-	   			Chip_UART_SendByte(UART_LIN, 0xAA);
-	   		}
+		case C_SLAVE_ID_READ:
+			PushTx(SLAVE_ID_READ);
+			break;
+		case C_SLAVE_ID_WRITE:
+			PushTx(SLAVE_ID_WRITE);
 			break;
 		default:
-	   		uart0_status = (Chip_UART_ReadLineStatus(UART_LIN) & UART_LSR_BITMASK);
-	   		uart0_status &= 0x20;
-	   		if(uart0_status == UART_LSR_THRE)
-	   		{
-	   			Chip_UART_SendByte(UART_LIN, 0x45);
-	   		}
+			PushTx(0x45);
 			break;
 	}
 
 }
 
+void PushTx(uint8_t dato)
+{
+	BUF_TX[Tx_In] = dato;
+	Tx_In ++;
+	Tx_In %= MAX_TX;
+}
 
+int PopTx (void)
+{
+	int8_t dato = -1;
 
+	if( Tx_In != Tx_Out )
+	{
+		dato = 	(int8_t ) BUF_TX[Tx_Out];
+		Tx_Out ++;
+		Tx_Out %= MAX_TX;
+	}
 
+	return dato;
+}
 
+void PushRx(unsigned char dato)
+{
+	BUF_RX[Rx_In] = dato;
+	Rx_In ++;
+	Rx_In %= MAX_RX;
+}
 
+int PopRx (void)
+{
+	int dato = -1;
 
+	if( Rx_In != Rx_Out )
+	{
+		dato = 	(int ) BUF_RX[Rx_Out];
+		Rx_Out ++;
+		Rx_Out %= MAX_RX;
+	}
+
+	return dato;
+}
 
 

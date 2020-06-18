@@ -27,6 +27,7 @@ void PORT_Init(void)
     XBR2      = 0x44;
   
 	P74OUT	=	0x08;	//P5H en Push-Pull
+	P1MDOUT   = 0xFF;	//P1  en Push-Pull
 	
 	P0		=	0x00;
 	P3		=	0x00;
@@ -73,7 +74,7 @@ void TIMER_Init ( void )
 void PCA_Init( void )
 {
     PWM_ENABLE; 	  //PCA0CN    = 0x40; //PWN ON
-    PCA0MD    = 0x08; //Fuente SYCLK/4
+    PCA0MD    = 0x00; //Fuente SYCLK/12
     //PCA0CPM0  = 0x42; //PWM de 8bits de resolucion
     PWM_VAL_INI;	  //PCA0CPH0  = 0x40; //Valor inicial de 0x40
 	PWM_ON;			  //arranca
