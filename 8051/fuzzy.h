@@ -33,11 +33,11 @@
 
 //define the values off PWM related to the putput singletons
 #define  M_OFF		0xFF
-#define  M_LOW		0xF0
-#define  M_MEDIUM	0x80
-#define  M_HIGH		0x40
-#define  M_VHIGH	0x10
-#define  M_MAX		0x06
+#define  M_LOW		0xCC
+#define  M_MEDIUM	0x99
+#define  M_HIGH		0x66
+#define  M_VHIGH	0x33
+#define  M_MAX		0x00 //0x06
 
 extern unsigned char outputs[OUTPUT_TOT][MF_TOT], // fuzzy output mu values
 			  		 fuzzy_out[OUTPUT_TOT]; // fuzzy engine outputs

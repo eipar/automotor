@@ -219,24 +219,31 @@ void normalize (void){
 	{
 		case V_OFF:
 			fuzzy_out[0] = M_OFF;
+			PMW_0_DUTY;
 			break;
 		case V_LOW:
 			fuzzy_out[0] = M_LOW;
+			PWM_ON;
 			break;
 		case V_MEDIUM:
 			fuzzy_out[0] = M_MEDIUM;
+			PWM_ON;
 			break;
 		case V_HIGH:
 			fuzzy_out[0] = M_HIGH;
+			PWM_ON;
 			break;
 		case V_VHIGH:
 			fuzzy_out[0] = M_VHIGH;
+			PWM_ON;
 			break;
 		case V_MAX:
 			fuzzy_out[0] = M_MAX;
+			PWM_ON;
 			break;
 		default:
 			fuzzy_out[0] = M_LOW;
+			PWM_ON;
 			break;
 	}
 }
