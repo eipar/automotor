@@ -42,20 +42,20 @@ unsigned char code input_memf[INPUT_TOT][MF_TOT][4]={
 		// point/slope data
 	// membership functions for temperature
 	{
-		{ 0x0D, 0xFF, 0x35, 0x12 }, // T_VLOW
-		{ 0x35, 0x12, 0x5D, 0x12 }, // T_LOW
-		{ 0x5D, 0x12, 0x86, 0x14 }, // T_MEDIUM
-		{ 0x86, 0x14, 0xA1, 0x14 }, // T_HIGH
-		{ 0xA1, 0x14, 0xC2, 0x12 }, // T_VHIGH
-		{ 0xC2, 0x12, 0xF0, 0xFF }	// T_CRITICAL
+		{ 0x00, 0x40, 0x35, 0x12 }, // T_VLOW
+		{ 0x2E, 0x12, 0x5D, 0x12 }, // T_LOW
+		{ 0x57, 0x14, 0x86, 0x14 }, // T_MEDIUM
+		{ 0x7F, 0x14, 0xA1, 0x14 }, // T_HIGH
+		{ 0x9A, 0x14, 0xC2, 0x12 }, // T_VHIGH
+		{ 0xB5, 0x0D, 0xEE, 0x55 }	// T_CRITICAL
 	},
 	// membership functions for acceleration
 	{
-		{ 0x00, 0x80, 0x0C, 0x14 }, // A_STEADY
-		{ 0x0C, 0x14, 0x33, 0x15 }, // A_LOW
-		{ 0x33, 0x15, 0x72, 0x0A }, // A_MEDIUM
-		{ 0x72, 0x0A, 0xBF, 0x0A }, // A_HIGH
-		{ 0xBF, 0x0A, 0xFC, 0x55 }  // A_VHIGH
+		{ 0x00, 0x80, 0x0F, 0x1A }, // A_STEADY
+		{ 0x0C, 0x20, 0x33, 0x15 }, // A_LOW
+		{ 0x2D, 0x14, 0x72, 0x0A }, // A_MEDIUM
+		{ 0x6B, 0x0A, 0xBF, 0x0A }, // A_HIGH
+		{ 0xB7, 0x0C, 0xFC, 0x55 }  // A_VHIGH
 	}
 };
 
@@ -150,7 +150,7 @@ unsigned char compute_memval(unsigned char inp_num,unsigned char label) {
 			} else {
 				temp*=input_memf[inp_num][label][1];
 			}
-			if (temp < 0x100) { // if mu did not exceed 1
+			if (temp <= 0xFF) { // if mu did not exceed 1
 				return temp; // return the computed value
 			} else {
 				return MU_MAX; // make sure that mu stays in range
@@ -181,19 +181,19 @@ Side Effects: The outputs[][] array is cleared.
 *****************************************************************/
 void defuzzify(void) {
 	unsigned long numerator, denominator;
-	unsigned char i, j;
-	for (i=0; i<OUTPUT_TOT; i++) { // for all outputs...
+	unsigned char out_num, adj_num;
+	for (out_num=0; out_num<OUTPUT_TOT; out_num++) { // for all outputs...
 		numerator=0; // reset the summation values
 		denominator=0;
-		for (j=0; j<MF_TOT; j++) { // compute the summation values
-			numerator+=(outputs[i][j]*output_memf[i][j]);
-			denominator+=outputs[i][j];
-			outputs[i][j]=0; // clear the output as its used
+		for (adj_num=0; adj_num<MF_TOT; adj_num++) { // compute the summation values
+			numerator+=(outputs[out_num][adj_num]*output_memf[out_num][adj_num]);
+			denominator+=outputs[out_num][adj_num];
+			outputs[out_num][adj_num]=0; // clear the output as its used
 		}
 		if (denominator) { // make sure that a divide by 0 does not occur
-			fuzzy_out[i]=numerator/denominator; // finalize the COG
+			fuzzy_out[out_num]=numerator/denominator; // finalize the COG
 		} else {
-			fuzzy_out[i]=DEFAULT_VALUE; // no rules fired for this output - set a default value
+			fuzzy_out[out_num]=DEFAULT_VALUE; // no rules fired for this output - set a default value
 		}
 	}
 	normalize(); // change fuzzy output to normal output
@@ -206,6 +206,7 @@ void normalize (void){
 	//sometimes the output is not in the form 0xX0
 	//so we round it
 	aux = fuzzy_out[0];
+//	P2 = aux;
 	if ( (aux&0x0F) >= 0x08 )
 	{
 		aux = ((aux & 0xF0)+ 0x10);
@@ -214,7 +215,8 @@ void normalize (void){
 	{
 		aux = aux & 0xF0;
 	}
-	// we replace de fuzzy output for the PWM values 
+	// we replace de fuzzy output for the PWM values
+	P2 = aux; 
 	switch (aux)
 	{
 		case V_OFF:

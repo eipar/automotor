@@ -59,6 +59,7 @@ void Mensajes (void )
 	static char inx = 0;
 	static unsigned char last_acc = 0;
 	unsigned char dato[MAX_REC_BYTES];
+	unsigned int  dato_int;
 	unsigned char gen_checksum;
 
 	for (inx = 0; inx < MAX_REC_BYTES; inx++)
@@ -80,7 +81,9 @@ void Mensajes (void )
 			else led4_ON;
 			last_acc = dato[0];
 		}
-		input[1] = dato[0];
+		dato_int = (int)dato[0];
+		input[1] = dato_int*255/100;
+		//input[1] = dato[0];
 	}
 
 }

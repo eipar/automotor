@@ -6,7 +6,7 @@
 #define MU_MAX			0xFF
 #define IO_NUM 			0x07
 #define LABEL_NUM 		0x70
-#define DEFAULT_VALUE	0xF0
+#define DEFAULT_VALUE	0xE0
 
 // define constants for the temperature input
 #define T_VLOW 		0x00

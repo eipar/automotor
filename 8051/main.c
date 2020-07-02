@@ -19,6 +19,7 @@ void main ( void )
 {
 	float temp_med;
 	unsigned char  temp_fuzzy_in;
+	unsigned int temp_fuzzy_int, temp_expanded;
 	unsigned int cant_flancos_prev;
 
 	PLACA_Init( );
@@ -48,16 +49,19 @@ void main ( void )
 			check_status_sensor( temp_med );
 
 			temp_fuzzy_in = (unsigned char) (temp_med + 50);
-			if (temp_fuzzy_in >= 175) temp_fuzzy_in = 175; 
-			Temp = temp_fuzzy_in; 
-			input[0] = temp_fuzzy_in;
+			if (temp_fuzzy_in >= 175) temp_fuzzy_in = 174;
+			if (temp_fuzzy_in <  6  ) temp_fuzzy_in = 6; 
+			Temp = temp_fuzzy_in;
+			temp_fuzzy_int = (unsigned int)temp_fuzzy_in;
+			temp_expanded = (temp_fuzzy_int*255/170)-8;
+			input[0] = (unsigned char)(temp_expanded);
 			temp_fuzzy_in = 0;
 		}
 
 		if(check_fuzzy)
 		{
 		 	check_fuzzy = 0;
-			P2 = input[1];
+			//P2 = input[1];
 			fuzzy_engine();
 			PCA0CPH0 = fuzzy_out[0];
 			
