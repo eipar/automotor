@@ -50,13 +50,14 @@
 //Macros varias para los 4 leds	del kit de desarrollo
 #define		led1_ON			setbitp( P5, 4, ACTIVO_ALTO )
 #define		led1_OFF		clrbitp( P5, 4, ACTIVO_ALTO )
-#define		led1_STATUS		ifpinp( P5, 4, ACTIVO_ALTO )
+#define		led1_STATUS		ifpinp ( P5, 4, ACTIVO_ALTO )
 #define     led2_ON			setbitp( P5, 5, ACTIVO_ALTO )
 #define     led2_OFF		clrbitp( P5, 5, ACTIVO_ALTO )
 #define		led3_ON			setbitp( P5, 6, ACTIVO_ALTO )
 #define		led3_OFF		clrbitp( P5, 6, ACTIVO_ALTO )
 #define		led4_ON			setbitp( P5, 7, ACTIVO_ALTO )
 #define		led4_OFF		clrbitp( P5, 7, ACTIVO_ALTO )
+#define		led4_STATUS		ifpinp ( P5, 7, ACTIVO_ALTO )
 
 //Macros para saber el estado de los botonoes
 #define		tact0_STATUS		ifpinp( P5, 0, ACTIVO_BAJO )

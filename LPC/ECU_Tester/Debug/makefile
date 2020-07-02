@@ -29,7 +29,7 @@ all: periph_can.axf
 periph_can.axf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
-	arm-none-eabi-gcc -nostdlib -L"C:\Users\Euge\Desktop\can\lpc_chip_175x_6x\Debug" -L"C:\Users\Euge\Desktop\can\lpc_board_nxp_lpcxpresso_1769\Debug" -Xlinker -Map="periph_can.map" -Xlinker --gc-sections -mcpu=cortex-m3 -mthumb -T "periph_can_Debug.ld" -o "periph_can.axf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -nostdlib -L"C:\Users\Francisco\Documents\MCUXpressoIDE_11.1.1_3241\workspace\lpc_chip_175x_6x\Debug" -L"C:\Users\Francisco\Documents\MCUXpressoIDE_11.1.1_3241\workspace\lpc_board_nxp_lpcxpresso_1769\Debug" -Xlinker -Map="periph_can.map" -Xlinker --gc-sections -mcpu=cortex-m3 -mthumb -T "periph_can_Debug.ld" -o "periph_can.axf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
@@ -44,7 +44,6 @@ post-build:
 	-arm-none-eabi-size "periph_can.axf"; # arm-none-eabi-objcopy -v -O binary "periph_can.axf" "periph_can.bin" ; # checksum -p LPC1769 -d "periph_can.bin";
 	-@echo ' '
 
-.PHONY: all clean dependents
-.SECONDARY: post-build
+.PHONY: all clean dependents post-build
 
 -include ../makefile.targets

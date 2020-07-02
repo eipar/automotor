@@ -20,6 +20,12 @@ volatile unsigned char Rx_In,Rx_Out;
 
 void Set_UART0_LIN(void)
 {
+	//Init LEDs Alarm for LIN
+	Chip_IOCON_PinMuxSet(LPC_IOCON, LIN_LED_ALARM_PORT, LIN_LED_2_PIN, IOCON_FUNC0);
+	Chip_GPIO_SetPinOutLow(LPC_GPIO, LIN_LED_ALARM_PORT, LIN_LED_2_PIN);
+	Chip_IOCON_PinMuxSet(LPC_IOCON, LIN_LED_ALARM_PORT, LIN_LED_1_PIN, IOCON_FUNC0);
+	Chip_GPIO_SetPinOutLow(LPC_GPIO, LIN_LED_ALARM_PORT, LIN_LED_1_PIN);
+
 	//Temporary registers for UART0 configuration for LIN
 	uint32_t uart_config_data,uart_config_int;
 	//Configure pins function
@@ -94,12 +100,14 @@ void UART0_IRQHandler(void)
 		case UART_IIR_INTID_RLS: //error in the line, identification needed
 			uart0_status = Chip_UART_ReadLineStatus(UART_LIN); //clear int flag
 			//check failure? maybe later
+			Chip_GPIO_SetPinOutHigh(LPC_GPIO, LIN_LED_ALARM_PORT, LIN_LED_2_PIN);
 			break;
 		case UART_IIR_INTID_CTI: //character timeout, no use
-
+			Chip_GPIO_SetPinOutHigh(LPC_GPIO, LIN_LED_ALARM_PORT, LIN_LED_2_PIN);
 			break;
 		default:	//just in case
 			//can i halt this?
+			Chip_GPIO_SetPinOutHigh(LPC_GPIO, LIN_LED_ALARM_PORT, LIN_LED_2_PIN);
 			break;
 	}
 

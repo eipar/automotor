@@ -18,21 +18,24 @@ void PORT_Init(void)
     // P0.3  -  RX1 (UART1), Push-Pull,  Digital
     // P0.4  -  CEX0 (PCA),  Push-Pull,  Digital
     // P0.5  -  CEX1 (PCA),  Push-Pull,  Digital
-    // P0.6  -  Unassigned,  Push-Pull,  Digital
+    // P0.6  -  INT0 (Tmr0), Push-Pull,  Digital
     // P0.7  -  Unassigned,  Push-Pull,  Digital
 
-    //P0MDOUT   = 0xFF;
-    P74OUT    = 0x08;
     XBR0      = 0x14;
+	XBR1      = 0x04;
     XBR2      = 0x44;
   
 	P74OUT	=	0x08;	//P5H en Push-Pull
 	P1MDOUT   = 0xFF;	//P1  en Push-Pull
 	
 	P0		=	0x00;
+	P2		=	0x00;
 	P3		=	0x00;
 	P4		=	0xFF;
 	P5		=	0x0F;
+
+	//seteo la interrupcion INTO por flanco descendente
+	IT0 = 1;
 	
 }
 
@@ -100,9 +103,10 @@ void PLACA_Init ( void )
 	PCA_Init();
 	UART_Init();
 
-    IE        = 0x92;	//activo las interrupciones
+    
     EIE1      = 0x08;	//activo las interrupciones del PCA
 	EIE2      = EIE2 | 0x40;	//activo las interrupciones de la UART
+	IE        = 0x83;	//activo las interrupciones
 }
 
 //------------------------------------------------------------------------------

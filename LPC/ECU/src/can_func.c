@@ -36,6 +36,11 @@ void SetupAFLUT(void)
 
 void CAN_Init(void)
 {
+	//LED de Alarma en CAN
+	Chip_IOCON_PinMuxSet(LPC_IOCON, CAN_LED_ALARM_PORT, CAN_LED_ALARM_PIN, IOCON_FUNC0);
+	Chip_GPIO_SetPinOutLow(LPC_GPIO, CAN_LED_ALARM_PORT, CAN_LED_ALARM_PIN);
+
+	//Inicialización cAN
     Chip_CAN_Init(LPC_CAN, LPC_CANAF, LPC_CANAF_RAM);
     Chip_CAN_SetBitRate(LPC_CAN, 500000);
     Chip_CAN_EnableInt(LPC_CAN, CAN_IER_BITMASK);
@@ -73,13 +78,16 @@ void CAN_IRQHandler(void)
 		else
 		{
 			//mensaje es falopa, algo malio sal
-			Board_LED_Toggle(0);
+			Chip_GPIO_SetPinOutHigh(LPC_GPIO, CAN_LED_ALARM_PORT, CAN_LED_ALARM_PIN);
 		}
 	}
-	/* New Message sent */
-	if (IntStatus & CAN_ICR_TI1)
+	else if (IntStatus & CAN_ICR_TI1)
 	{
 		flag_transmit_ready = 1;
+	}
+	else
+	{
+		Chip_GPIO_SetPinOutHigh(LPC_GPIO, CAN_LED_ALARM_PORT, CAN_LED_ALARM_PIN);
 	}
 
 }

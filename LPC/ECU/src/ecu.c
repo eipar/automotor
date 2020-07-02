@@ -169,10 +169,15 @@ int main(void) {
 						lin_master_ask_moment = 0;
 						lin_temp_asked = data_received[3];
 						lin_diag_asked = data_received[4];
+						if(lin_diag_asked == 0x66)
+						{
+							Chip_GPIO_SetPinOutHigh(LPC_GPIO, LIN_LED_ALARM_PORT, LIN_LED_1_PIN);
+						}
 					}
 					else
 					{	//data is wrong, restart
 						lin_master_ask_moment = 1;
+						Chip_GPIO_SetPinOutHigh(LPC_GPIO, LIN_LED_ALARM_PORT, LIN_LED_2_PIN);
 					}
 				}
 				else
@@ -258,6 +263,7 @@ int main(void) {
         			else
         			{	//data is wrong, restart
         				lin_master_write_moment = 1;
+        				Chip_GPIO_SetPinOutHigh(LPC_GPIO, LIN_LED_ALARM_PORT, LIN_LED_2_PIN);
         			}
         		}
         		else

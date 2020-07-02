@@ -3,6 +3,7 @@
 
 volatile bit check_temp;
 volatile bit check_fuzzy;
+volatile bit check_motor_on;
 
 volatile bit flag_msg;
 volatile unsigned char Temp, Diag;
@@ -12,12 +13,13 @@ extern unsigned char Rx_In;
 volatile unsigned char Temp, Diag;
 
 volatile unsigned char rx_ok, tx_ok;
-volatile unsigned char edge_int_count;
+volatile unsigned int cant_flancos;
 
 void main ( void )
 {
 	float temp_med;
 	unsigned char  temp_fuzzy_in;
+	unsigned int cant_flancos_prev;
 
 	PLACA_Init( );
 
@@ -37,7 +39,7 @@ void main ( void )
 	while( 1 )
 	{
 		//test de si esto esta vivo o no
-		check_board_live();
+		//check_board_live();
 
 		if(check_temp)
 		{
@@ -46,6 +48,7 @@ void main ( void )
 			check_status_sensor( temp_med );
 
 			temp_fuzzy_in = (unsigned char) (temp_med + 50);
+			if (temp_fuzzy_in >= 175) temp_fuzzy_in = 175; 
 			Temp = temp_fuzzy_in; 
 			input[0] = temp_fuzzy_in;
 			temp_fuzzy_in = 0;
@@ -54,6 +57,7 @@ void main ( void )
 		if(check_fuzzy)
 		{
 		 	check_fuzzy = 0;
+			P2 = input[1];
 			fuzzy_engine();
 			PCA0CPH0 = fuzzy_out[0];
 			
@@ -65,48 +69,51 @@ void main ( void )
 			Mensajes();
 		}
 
+		if(check_motor_on == 1)
+		{
+		 	check_motor_on = 0;
+			if (cant_flancos_prev == cant_flancos)
+			{
+				//significa que no hubo transiciones
+				Diag = 0x66;
+			}
+			cant_flancos_prev = cant_flancos;
+		}
+
 	}
+}
+
+void count_int0 ( void ) interrupt 0
+{
+	cant_flancos++;
 }
 
 void timertick ( void ) interrupt 1
 {
-	static unsigned int ticks_sensores = 200;
-	static unsigned int ticks_gpio = 100;
+	static unsigned int ticks_sensor = 200;
 	static unsigned int ticks_pwm = 100;
+	static unsigned int ticks_int0 = 300;
 
 	reset_system_timer ();
 
-	ticks_sensores--;
-	ticks_gpio--;
+	ticks_sensor--;
 	ticks_pwm--;
+	ticks_int0--;
 
-	if( !ticks_sensores )
+	if( !ticks_sensor )
 	{	
 		check_temp = 1;
-		ticks_sensores = 1000;
+		ticks_sensor = 1000;
 	}		 
-
-//	//El Duty del PWM varia con los botoncitos del kit
-//	if( !ticks_pwm ){
-//		ticks_pwm = 100;
-//		check_fuzzy = 1;
-//		if(PWM_MAX_STATUS){
-//			PWM_VAL_INI;
-//		}else{
-//			if(tact0_STATUS) 
-//			{PMW_0_DUTY;}
-//			else if (tact1_STATUS)
-//			{PWM_SPEED_DOWN;}
-//			else if (tact2_STATUS)
-//			{PWM_SPEED_UP;}
-//			else if (tact3_STATUS) 
-//			{PWM_ON;}
-//		}
-//	}
 
 	if( !ticks_pwm ){
 		ticks_pwm = 100;
 		check_fuzzy = 1;
+	}
+
+	if( !ticks_int0){
+		ticks_int0 = 5000;
+		check_motor_on = 1;
 	}
 }
 
@@ -117,7 +124,6 @@ void pca0_handler (void) interrupt 9
 
 	CCF1 = 0; //bajo el flag de interrupcion
 
-	edge_int_count++;
 	if ((PCA0CPM1 & 0x10)) //esta configurado en neg edge
 	{     //fue neg edge
 		  PCA0L     = 0x00;	 //lo reseteo, no me interesa su valor actual
@@ -144,7 +150,7 @@ void pca0_handler (void) interrupt 9
 
 }
 
-void uart0_handler (void) interrupt 20
+void uart1_handler (void) interrupt 20
 {
 	unsigned char dato;
 	int dato1;

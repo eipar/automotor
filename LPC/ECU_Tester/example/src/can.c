@@ -112,7 +112,7 @@ int main(void)
 
 	while (1){
 
-		for(int i = 0; i<20000000; i++);
+		for(int i = 0; i<50000000; i++);
 
 		//Envio pedido de diagnostico
 		SendMsgBuf.ID = 0x30;
@@ -125,26 +125,26 @@ int main(void)
 
 		Chip_CAN_Send(LPC_CAN, TxBuf, &SendMsgBuf);
 
-		for(int i = 0; i<20000000; i++);
+		for(int i = 0; i<50000000; i++);
 
 		switch(can_acc){
-			case 0:
-				can_acc = 8;
+			case 3:
+				can_acc = 15;
 				break;
-			case 8:
+			case 15:
 				can_acc = 35;
 				break;
 			case 35:
 				can_acc = 65;
 				break;
 			case 65:
-				can_acc = 95;
+				can_acc = 90;
 				break;
-			case 95:
-				can_acc = 0;
+			case 90:
+				can_acc = 3;
 				break;
 			default:
-				can_acc = 8;
+				can_acc = 3;
 				break;
 		}
 

@@ -18,6 +18,10 @@ void LIN_Send(uint32_t);
 #define PIN_3_RXD0	3
 #define PIN_LIN_CS		21
 #define PIN_LIN_WAKE	22
+//Alarm LEDs LIN
+#define LIN_LED_ALARM_PORT	2
+#define LIN_LED_2_PIN		7
+#define LIN_LED_1_PIN		6
 
 //defines for cases of LIN_Send
 #define C_LONG_ZERO		 0

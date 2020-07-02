@@ -17,6 +17,9 @@
 #define CAN_ID_DIAG			(0x30)
 #define CAN_ID_ACC			(0x50)
 
+#define CAN_LED_ALARM_PORT	2
+#define CAN_LED_ALARM_PIN	8
+//En nuestro Board es LED3
 
 /** Function Declaration **/
 void PrintCANErrorInfo(uint32_t);

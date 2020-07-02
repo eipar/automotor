@@ -1,15 +1,17 @@
 /*
  * GENERATED FILE - DO NOT EDIT
- * (c) Code Red Technologies Ltd, 2008-2013
+ * Copyright (c) 2008-2013 Code Red Technologies Ltd,
+ * Copyright 2015, 2018-2019 NXP
  * (c) NXP Semiconductors 2013-2020
  * Generated linker script file for LPC1769
  * Created from library.ldt by FMCreateLinkLibraries
  * Using Freemarker v2.3.23
- * LPCXpresso v8.1.4 [Build 606] [2016-03-14]  on 21-jun-2020 20:59:26
+ * MCUXpresso IDE v11.1.1 [Build 3241] [2020-03-02] on Jul 1, 2020 11:36:32 PM
  */
 
 GROUP (
-  libcr_nohost.a
-  libcr_c.a
-  libcr_eabihelpers.a
+  "libcr_nohost.a"
+  "libcr_c.a"
+  "libcr_eabihelpers.a"
+  "libgcc.a"
 )

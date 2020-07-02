@@ -54,23 +54,10 @@ int PopTx (void)
 	return dato;
 }
 
-//void Transmitir( char *msg)
-//{
-//	char i;
-//
-//	for (i = 0 ; msg[i] ; i++)
-//		PushTx( msg[i]);
-//
-//	if ( !flagTx )
-//	{
-//		flagTx = 1;	
-//		ARRANCAR_TX;
-//	}
-//}
-
 void Mensajes (void )
 {
 	static char inx = 0;
+	static unsigned char last_acc = 0;
 	unsigned char dato[MAX_REC_BYTES];
 	unsigned char gen_checksum;
 
@@ -87,6 +74,12 @@ void Mensajes (void )
 	}
 	else
 	{
+		if (dato[0] != last_acc)
+		{
+			if(led4_STATUS) led4_OFF;
+			else led4_ON;
+			last_acc = dato[0];
+		}
 		input[1] = dato[0];
 	}
 
